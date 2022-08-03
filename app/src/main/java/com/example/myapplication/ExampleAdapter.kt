@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.example.myapplication.databinding.GridItemBinding
 
 class ExampleAdapter() : ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHolder>(object :
@@ -25,6 +26,9 @@ class ExampleAdapter() : ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHol
     inner class ExampleViewHolder(private val binding: GridItemBinding) : ViewHolder(binding.root) {
         fun binding(model: ExampleModel) {
             binding.title.text = model.title
+            Glide.with(binding.root.context)
+                .load(model.imageUrl)
+                .into(binding.image)
         }
     }
 
@@ -38,4 +42,4 @@ class ExampleAdapter() : ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHol
     }
 }
 
-data class ExampleModel(val title: String, val id: Int)
+data class ExampleModel(val title: String, val id: Int, val imageUrl: String)
