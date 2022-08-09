@@ -9,22 +9,29 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.myapplication.databinding.GridItemBinding
 
-class ExampleAdapter() : ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHolder>(object :
-    DiffUtil.ItemCallback<ExampleModel>() {
-    override fun areItemsTheSame(
-        oldItem: ExampleModel,
-        newItem: ExampleModel
-    ) = oldItem == newItem
+class ExampleAdapter(val callback: (model: ExampleModel) -> Unit) :
+    ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHolder>(object :
+        DiffUtil.ItemCallback<ExampleModel>() {
+        override fun areItemsTheSame(
+            oldItem: ExampleModel,
+            newItem: ExampleModel
+        ) = oldItem == newItem
 
-    override fun areContentsTheSame(
-        oldItem: ExampleModel,
-        newItem: ExampleModel
-    ) = oldItem == newItem
-}) {
+        override fun areContentsTheSame(
+            oldItem: ExampleModel,
+            newItem: ExampleModel
+        ) = oldItem == newItem
+    }) {
 
 
-    inner class ExampleViewHolder(private val binding: GridItemBinding) : ViewHolder(binding.root) {
+    inner class ExampleViewHolder(
+        val callback: (model: ExampleModel) -> Unit,
+        private val binding: GridItemBinding
+    ) : ViewHolder(binding.root) {
         fun binding(model: ExampleModel) {
+            binding.title.setOnClickListener {
+                callback.invoke(model)
+            }
             binding.title.text = model.title
             Glide.with(binding.root.context)
                 .load(model.imageUrl)
@@ -34,7 +41,7 @@ class ExampleAdapter() : ListAdapter<ExampleModel, ExampleAdapter.ExampleViewHol
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExampleViewHolder {
         val view = GridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExampleViewHolder(view)
+        return ExampleViewHolder(callback, view)
     }
 
     override fun onBindViewHolder(holder: ExampleViewHolder, position: Int) {

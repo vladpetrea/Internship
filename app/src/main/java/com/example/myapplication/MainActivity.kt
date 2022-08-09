@@ -60,7 +60,9 @@ class MainActivity : AppCompatActivity() {
         )
 
 
-        binding.viewpager.adapter = ExampleAdapter().apply {
+        binding.viewpager.adapter = ExampleAdapter({ model ->
+
+        }).apply {
             submitList(
                 listOfViewpagerItems
             )
