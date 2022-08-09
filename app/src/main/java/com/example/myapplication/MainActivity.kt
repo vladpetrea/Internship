@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 
 import com.example.myapplication.databinding.ActivityMainBinding
@@ -13,11 +14,23 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    companion object {
+        const val CHUCK_DATABASE_TAG = "chuck_database"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val database = Room.databaseBuilder(
+            applicationContext,
+            ExampleRoomDatabase::class.java,
+            CHUCK_DATABASE_TAG
+        ).build()
+
+        val dao = database.getChuckDao()
 
         val listOfViewpagerItems = listOf(
             ExampleModel(
@@ -74,9 +87,17 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
                 //ChuckNorisRepositoryOkHttp().retrieveRandomChuckJoke()
 
+
                 ChuckNorisRepositoryRetrofit().apply {
-                    //retrieveRandomChuckJokeWithQueryParams()
-                    retrieveChuckJokeParsed()
+                    val response = retrieveChuckJokeParsed()
+                    dao.insertOne(
+                        ChuckNorisDatabaseModel(
+                            id = response.id,
+                            joke = response.value,
+                            createdAt = response.createdAt
+                        )
+                    )
+                    //retrieveChuckJokeParsed()
                 }
             }
         }
